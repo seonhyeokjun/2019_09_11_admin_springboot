@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class OrderDetailRepositoryTest extends StudyApplicationTests {
@@ -17,13 +18,14 @@ public class OrderDetailRepositoryTest extends StudyApplicationTests {
     public void create(){
         OrderDetail orderDetail = new OrderDetail();
 
-        orderDetail.setOrderAt(LocalDateTime.now());
-
-        // 어떤사람?
-        //orderDetail.setUserId(5L);
-
-        // 어떤 상품?
-        //orderDetail.setItemId(1L);
+        orderDetail.setStatus("WAITING");
+        orderDetail.setArrivalDate(LocalDateTime.now().plusDays(2));
+        orderDetail.setQuantity(1);
+        orderDetail.setTotalPrice(BigDecimal.valueOf(900000));
+        //orderDetail.setOrderGroupId(1L); // Long -> OrderGroup // 어떠한 장바구니에
+        //orderDetail.setItemId(1L); // 어떠한 상품
+        orderDetail.setCreatedAt(LocalDateTime.now());
+        orderDetail.setCreatedBy("Partner01");
 
         OrderDetail newOrderDetail = orderDetailRepository.save(orderDetail);
 
