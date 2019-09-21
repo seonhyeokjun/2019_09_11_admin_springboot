@@ -53,24 +53,23 @@ public class ItemApiLogicService implements CrudInterface<ItemApiRequest, ItemAp
     @Override
     public Header<ItemApiResponse> update(Header<ItemApiRequest> request) {
 
-        ItemApiRequest itemApiRequest = request.getData();
+        ItemApiRequest body = request.getData();
 
-        Optional<Item> optional = itemRepository.findById(itemApiRequest.getId());
+        return itemRepository.findById(body.getId())
+                .map(entityItem -> {
+                    entityItem.setStatus(body.getStatus())
+                        .setName(body.getName())
+                        .setTitle(body.getTitle())
+                        .setContent(body.getContent())
+                        .setPrice(body.getPrice())
+                        .setBrandName(body.getBrandName())
+                        .setRegisteredAt(body.getRegisteredAt())
+                        .setUnregisteredAt(body.getUnregisteredAt());
 
-        return optional.map(item -> {
-            item.setStatus(itemApiRequest.getStatus())
-                    .setName(itemApiRequest.getName())
-                    .setTitle(itemApiRequest.getTitle())
-                    .setContent(itemApiRequest.getContent())
-                    .setPrice(itemApiRequest.getPrice())
-                    .setBrandName(itemApiRequest.getBrandName())
-                    .setRegisteredAt(itemApiRequest.getRegisteredAt())
-                    .setUnregisteredAt(itemApiRequest.getUnregisteredAt());
-
-            return item;
+            return entityItem;
         })
-        .map(item -> itemRepository.save(item))
-        .map(updateItem -> response(updateItem))
+        .map(newEntityItem -> itemRepository.save(newEntityItem))
+        .map(item -> response(item))
         .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
