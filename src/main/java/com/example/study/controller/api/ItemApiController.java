@@ -24,7 +24,7 @@ public class ItemApiController implements CrudInterface<ItemApiRequest, ItemApiR
     @Override
     @GetMapping("{id}") // /api/item/1 ... 1000
     public Header<ItemApiResponse> read(@PathVariable Long id) {
-        return null;
+        return itemApiLogicService.read(id);
     }
 
     @Override
