@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ItemApiLogicService implements CrudInterface<ItemApiRequest, ItemApiResponse> {
@@ -51,12 +52,37 @@ public class ItemApiLogicService implements CrudInterface<ItemApiRequest, ItemAp
 
     @Override
     public Header<ItemApiResponse> update(Header<ItemApiRequest> request) {
-        return null;
+
+        ItemApiRequest itemApiRequest = request.getData();
+
+        Optional<Item> optional = itemRepository.findById(itemApiRequest.getId());
+
+        return optional.map(item -> {
+            item.setStatus(itemApiRequest.getStatus())
+                    .setName(itemApiRequest.getName())
+                    .setTitle(itemApiRequest.getTitle())
+                    .setContent(itemApiRequest.getContent())
+                    .setPrice(itemApiRequest.getPrice())
+                    .setBrandName(itemApiRequest.getBrandName())
+                    .setRegisteredAt(itemApiRequest.getRegisteredAt())
+                    .setUnregisteredAt(itemApiRequest.getUnregisteredAt());
+
+            return item;
+        })
+        .map(item -> itemRepository.save(item))
+        .map(updateItem -> response(updateItem))
+        .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return null;
+
+        return itemRepository.findById(id)
+                .map(item -> {
+                    itemRepository.delete(item);
+                    return Header.OK();
+                })
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     private Header<ItemApiResponse> response(Item item){
