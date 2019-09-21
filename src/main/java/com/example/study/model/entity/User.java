@@ -1,5 +1,6 @@
 package com.example.study.model.entity;
 
+import com.example.study.model.enumclass.UserStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,7 +32,8 @@ public class User {
 
     private String password;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;  // REGISTERED / UNREGISTERED / WAITING /
 
     private String email;
 
@@ -53,7 +55,7 @@ public class User {
     @LastModifiedBy
     private String updatedBy;
 
-    // User 1 : N OrederGroup
+    // User 1 : N OrderGroup
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<OrderGroup> orderGroupList;
 
