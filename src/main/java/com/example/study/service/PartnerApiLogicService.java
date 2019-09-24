@@ -4,16 +4,38 @@ import com.example.study.model.entity.Partner;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.PartnerApiRequest;
 import com.example.study.model.network.response.PartnerApiResponse;
+import com.example.study.repository.CategoryRepository;
 import com.example.study.repository.PartnerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class PartnerApiLogicService extends BaseService<PartnerApiRequest, PartnerApiResponse, Partner> {
 
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public Header<PartnerApiResponse> create(Header<PartnerApiRequest> request) {
-        return null;
+
+        PartnerApiRequest body = request.getData();
+
+        Partner partner = Partner.builder()
+                .name(body.getName())
+                .status(body.getStatus())
+                .address(body.getAddress())
+                .callCenter(body.getCallCenter())
+                .partnerNumber(body.getPartnerNumber())
+                .businessNumber(body.getBusinessNumber())
+                .ceoName(body.getCeoName())
+                .registeredAt(LocalDateTime.now())
+                .category(categoryRepository.getOne(body.getCategoryId()))
+                .build();
+
+        Partner newPartner = baseRepository.save(partner);
+        return response(newPartner);
     }
 
     @Override
@@ -26,11 +48,38 @@ public class PartnerApiLogicService extends BaseService<PartnerApiRequest, Partn
 
     @Override
     public Header<PartnerApiResponse> update(Header<PartnerApiRequest> request) {
+
+        PartnerApiRequest body = request.getData();
+
+        baseRepository.findById(body.getId())
+                .map(partner -> {
+                    partner.setName(body.getName())
+                            .setStatus(body.getStatus())
+                            .setAddress(body.getAddress())
+                            .setCallCenter(body.getCallCenter())
+                            .setPartnerNumber(body.getPartnerNumber())
+                            .setBusinessNumber(body.getBusinessNumber())
+                            .setCeoName(body.getCeoName())
+                            .setRegisteredAt(body.getRegisteredAt())
+                            .setUnregisteredAt(body.getUnregisteredAt());
+
+                    return partner;
+                })
+                .map(newPartner -> baseRepository.save(newPartner))
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+
         return null;
     }
 
     @Override
     public Header delete(Long id) {
+        baseRepository.findById(id)
+                .map(partner -> {
+                    baseRepository.delete(partner);
+                    return Header.OK();
+                })
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
         return null;
     }
 
