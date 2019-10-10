@@ -18,22 +18,22 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
     @Override
     public Header<UserApiResponse> create(Header<UserApiRequest> request) {
 
-        // 1. request data
-        UserApiRequest userApiRequest = request.getData();
+        return Optional.ofNullable(request.getData())
+                .map(body -> {
+                    User user = User.builder()
+                            .account(body.getAccount())
+                            .password(body.getPassword())
+                            .status(UserStatus.REGISTERED)
+                            .phoneNumber(body.getPhoneNumber())
+                            .email(body.getEmail())
+                            .registeredAt(LocalDateTime.now())
+                            .build();
 
-        // 2. User 생성
-        User user = User.builder()
-                .account(userApiRequest.getAccount())
-                .password(userApiRequest.getPassword())
-                .status(UserStatus.REGISTERED)
-                .phoneNumber(userApiRequest.getPhoneNumber())
-                .email(userApiRequest.getEmail())
-                .registeredAt(LocalDateTime.now())
-                .build();
-        User newUser = baseRepository.save(user);
-
-        // 3. 생선된 데이터 -> UserApiResponse return
-        return response(newUser);
+                    return user;
+                })
+                .map(newUser -> baseRepository.save(newUser))
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override

@@ -58,6 +58,7 @@ public class OrderGroup {
 
     @LastModifiedBy
     private String updatedBy;
+
     // OrderGroup N : 1 User
     @ManyToOne
     private User user;

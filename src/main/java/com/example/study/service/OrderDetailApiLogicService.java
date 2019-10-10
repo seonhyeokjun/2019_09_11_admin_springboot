@@ -30,8 +30,8 @@ public class OrderDetailApiLogicService extends BaseService<OrderDetailApiReques
                 .arrivalDate(LocalDateTime.now().plusDays(2))
                 .quantity(body.getQuantity())
                 .totalPrice(body.getTotalPrice())
-                .item(itemRepository.getOne(body.getItemId()))
                 .orderGroup(orderGroupRepository.getOne(body.getOrderGroupId()))
+                .item(itemRepository.getOne(body.getItemId()))
                 .build();
 
         OrderDetail newOrderDetail = baseRepository.save(orderDetail);
@@ -55,11 +55,11 @@ public class OrderDetailApiLogicService extends BaseService<OrderDetailApiReques
                     orderDetail.setStatus(body.getStatus())
                             .setArrivalDate(body.getArrivalDate())
                             .setQuantity(body.getQuantity())
-                            .setTotalPrice(body.getTotalPrice());
-
+                            .setTotalPrice(body.getTotalPrice())
+                            .setItem(itemRepository.getOne(body.getItemId()));
                     return orderDetail;
                 })
-                .map(newOrederDetail -> baseRepository.save(newOrederDetail))
+                .map(newOrderDetail -> baseRepository.save(newOrderDetail))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -82,8 +82,8 @@ public class OrderDetailApiLogicService extends BaseService<OrderDetailApiReques
                 .arrivalDate(orderDetail.getArrivalDate())
                 .quantity(orderDetail.getQuantity())
                 .totalPrice(orderDetail.getTotalPrice())
-                .itemId(orderDetail.getItem().getId())
                 .orderGroupId(orderDetail.getOrderGroup().getId())
+                .itemId(orderDetail.getItem().getId())
                 .build();
 
         return Header.OK(body);

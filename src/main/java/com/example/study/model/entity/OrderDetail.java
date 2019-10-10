@@ -1,5 +1,6 @@
 package com.example.study.model.entity;
 
+import com.example.study.model.enumclass.OrderGroupStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -25,7 +26,10 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderGroupStatus status;
+
     private LocalDateTime arrivalDate;
     private Integer quantity;
     private BigDecimal totalPrice;
@@ -42,12 +46,11 @@ public class OrderDetail {
     @LastModifiedBy
     private String updatedBy;
 
-    //OrderDetail N : 1 Item
-    @ManyToOne
-    private Item item;
-
     // OrderDetail N : 1 OrderGroup
     @ManyToOne
     private OrderGroup orderGroup;
 
+    //OrderDetail N : 1 Item
+    @ManyToOne
+    private Item item;
 }

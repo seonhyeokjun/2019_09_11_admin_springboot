@@ -1,16 +1,15 @@
 package com.example.study.service;
 
-import com.example.study.ifs.CrudInterface;
 import com.example.study.model.entity.OrderGroup;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.OrderGroupApiRequest;
 import com.example.study.model.network.response.OrderGroupApiResponse;
-import com.example.study.repository.OrderGroupRepository;
 import com.example.study.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest, OrderGroupApiResponse, OrderGroup> {
@@ -21,23 +20,26 @@ public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest,
     @Override
     public Header<OrderGroupApiResponse> create(Header<OrderGroupApiRequest> request) {
 
-        OrderGroupApiRequest body = request.getData();
+        return Optional.ofNullable(request.getData())
+                .map(body -> {
+                    OrderGroup orderGroup = OrderGroup.builder()
+                            .status(body.getStatus())
+                            .orderType(body.getOrderType())
+                            .revAddress(body.getRevAddress())
+                            .revName(body.getRevName())
+                            .paymentType(body.getPaymentType())
+                            .totalPrice(body.getTotalPrice())
+                            .totalQuantity(body.getTotalQuantity())
+                            .orderAt(LocalDateTime.now())
+                            .arrivalDate(LocalDateTime.now().plusDays(2))
+                            .user(userRepository.getOne(body.getUserId()))
+                            .build();
 
-        OrderGroup orderGroup = OrderGroup.builder()
-                .status(body.getStatus())
-                .orderType(body.getOrderType())
-                .revAddress(body.getRevAddress())
-                .revName(body.getRevName())
-                .paymentType(body.getPaymentType())
-                .totalPrice(body.getTotalPrice())
-                .totalQuantity(body.getTotalQuantity())
-                .orderAt(LocalDateTime.now())
-                .arrivalDate(LocalDateTime.now().plusDays(2))
-                .user(userRepository.getOne(body.getUserId()))
-                .build();
-
-        OrderGroup newOrderGroup = baseRepository.save(orderGroup);
-        return response(newOrderGroup);
+                    return orderGroup;
+                })
+                .map(newOrderGroup -> baseRepository.save(newOrderGroup))
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
@@ -50,25 +52,26 @@ public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest,
     @Override
     public Header<OrderGroupApiResponse> update(Header<OrderGroupApiRequest> request) {
 
-        OrderGroupApiRequest body = request.getData();
+        return Optional.ofNullable(request.getData())
+                .map(body -> {
+                    return baseRepository.findById(body.getId())
+                            .map(orderGroup -> {
+                                orderGroup.setStatus(body.getStatus())
+                                        .setOrderType(body.getOrderType())
+                                        .setRevAddress(body.getRevAddress())
+                                        .setRevName(body.getRevName())
+                                        .setPaymentType(body.getPaymentType())
+                                        .setTotalPrice(body.getTotalPrice())
+                                        .setTotalQuantity(body.getTotalQuantity())
+                                        .setOrderAt(body.getOrderAt())
+                                        .setArrivalDate(body.getArrivalDate());
 
-        return baseRepository.findById(body.getId())
-                .map(orderGroup -> {
-                    orderGroup.setStatus(body.getStatus())
-                            .setOrderType(body.getOrderType())
-                            .setRevAddress(body.getRevAddress())
-                            .setRevName(body.getRevName())
-                            .setPaymentType(body.getPaymentType())
-                            .setTotalPrice(body.getTotalPrice())
-                            .setTotalQuantity(body.getTotalQuantity())
-                            .setOrderAt(body.getOrderAt())
-                            .setArrivalDate(body.getArrivalDate())
-                            .setUser(userRepository.getOne(body.getUserId()));  // 사실상 아이디는 변할일이 없으나 실험
-
-                    return orderGroup;
+                                return orderGroup;
+                            })
+                            .map(changeOrderGroup -> baseRepository.save(changeOrderGroup))
+                            .map(this::response)
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                 })
-                .map(changeOrderGroup -> baseRepository.save(changeOrderGroup))
-                .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
