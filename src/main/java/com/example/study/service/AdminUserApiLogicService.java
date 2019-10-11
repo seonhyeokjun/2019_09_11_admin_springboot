@@ -40,7 +40,6 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
 
     @Override
     public Header<AdminUserApiResponse> read(Long id) {
-
         return baseRepository.findById(id)
                 .map(this::response)
                 .map(Header::OK)
@@ -83,7 +82,7 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
         return null;
     }
 
-    private AdminUserApiResponse response(AdminUser adminUser){
+    public AdminUserApiResponse response(AdminUser adminUser){
 
         AdminUserApiResponse body = AdminUserApiResponse.builder()
                 .id(adminUser.getId())
