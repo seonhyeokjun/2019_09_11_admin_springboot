@@ -4,6 +4,7 @@ import com.example.study.model.entity.OrderGroup;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.OrderGroupApiRequest;
 import com.example.study.model.network.response.OrderGroupApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import com.example.study.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -92,7 +93,7 @@ public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest,
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private OrderGroupApiResponse response(OrderGroup orderGroup){
+    public OrderGroupApiResponse response(OrderGroup orderGroup){
 
         OrderGroupApiResponse body = OrderGroupApiResponse.builder()
                 .id(orderGroup.getId())
@@ -119,5 +120,10 @@ public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest,
                 .collect(Collectors.toList());
 
         return Header.OK(orderGroupApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }

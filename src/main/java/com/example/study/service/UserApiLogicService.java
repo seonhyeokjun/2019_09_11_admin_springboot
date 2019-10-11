@@ -1,12 +1,13 @@
 package com.example.study.service;
 
 import com.example.study.ifs.CrudInterface;
+import com.example.study.model.entity.OrderGroup;
 import com.example.study.model.entity.User;
 import com.example.study.model.enumclass.UserStatus;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.UserApiRequest;
-import com.example.study.model.network.response.PartnerApiResponse;
-import com.example.study.model.network.response.UserApiResponse;
+import com.example.study.model.network.response.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
+
+    @Autowired
+    private OrderGroupApiLogicService orderGroupApiLogicService;
+
+    @Autowired
+    private ItemApiLogicService itemApiLogicService;
 
     @Override
     public Header<UserApiResponse> create(Header<UserApiRequest> request) {
@@ -96,7 +103,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private UserApiResponse response(User user){
+    public UserApiResponse response(User user){
         // user -> userApiResponse
 
         UserApiResponse userApiResponse = UserApiResponse.builder()
@@ -122,5 +129,35 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .collect(Collectors.toList());
 
         return Header.OK(userApiResponseList);
+    }
+
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id){
+
+        User user = baseRepository.getOne(id);
+        UserApiResponse userApiResponse = response(user);
+
+        List<OrderGroup> orderGroupList = user.getOrderGroupList();
+
+        List<OrderGroupApiResponse> orderGroupApiResponseList = orderGroupList.stream()
+                .map(orderGroup -> {
+                    OrderGroupApiResponse orderGroupApiResponse = orderGroupApiLogicService.response(orderGroup);
+
+                    List<ItemApiResponse> itemApiResponseList = orderGroup.getOrderDetailList().stream()
+                            .map(deatil -> deatil.getItem())
+                            .map(item -> itemApiLogicService.response(item))
+                            .collect(Collectors.toList());
+
+                    orderGroupApiResponse.setItemApiResponseList(itemApiResponseList);
+                    return orderGroupApiResponse;
+                })
+                .collect(Collectors.toList());
+
+        userApiResponse.setOrderGroupApiResponseList(orderGroupApiResponseList);
+
+        UserOrderInfoApiResponse userOrderInfoApiResponse = UserOrderInfoApiResponse.builder()
+                .userApiResponse(userApiResponse)
+                .build();
+
+        return Header.OK(userOrderInfoApiResponse);
     }
 }

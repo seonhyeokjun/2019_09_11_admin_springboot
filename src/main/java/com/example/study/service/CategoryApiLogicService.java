@@ -6,6 +6,7 @@ import com.example.study.model.network.Header;
 import com.example.study.model.network.request.CategoryApiRequest;
 import com.example.study.model.network.response.CategoryApiResponse;
 import com.example.study.model.network.response.UserApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -89,5 +90,10 @@ public class CategoryApiLogicService extends BaseService<CategoryApiRequest, Cat
                 .collect(Collectors.toList());
 
         return Header.OK(categoryApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }

@@ -6,6 +6,7 @@ import com.example.study.model.network.Header;
 import com.example.study.model.network.request.AdminUserApiRequest;
 import com.example.study.model.network.response.AdminUserApiResponse;
 import com.example.study.model.network.response.UserApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -108,5 +109,10 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
                 .collect(Collectors.toList());
 
         return Header.OK(adminUserApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }

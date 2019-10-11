@@ -6,6 +6,7 @@ import com.example.study.model.network.Header;
 import com.example.study.model.network.request.PartnerApiRequest;
 import com.example.study.model.network.response.OrderGroupApiResponse;
 import com.example.study.model.network.response.PartnerApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import com.example.study.repository.CategoryRepository;
 import com.example.study.repository.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +119,10 @@ public class PartnerApiLogicService extends BaseService<PartnerApiRequest, Partn
                 .collect(Collectors.toList());
 
         return Header.OK(partnerApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }

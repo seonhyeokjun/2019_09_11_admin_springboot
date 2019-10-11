@@ -6,6 +6,7 @@ import com.example.study.model.network.Header;
 import com.example.study.model.network.request.OrderDetailApiRequest;
 import com.example.study.model.network.response.ItemApiResponse;
 import com.example.study.model.network.response.OrderDetailApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import com.example.study.repository.ItemRepository;
 import com.example.study.repository.OrderGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,5 +106,10 @@ public class OrderDetailApiLogicService extends BaseService<OrderDetailApiReques
                 .collect(Collectors.toList());
 
         return Header.OK(orderDetailApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }

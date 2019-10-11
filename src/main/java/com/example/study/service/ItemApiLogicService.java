@@ -7,6 +7,7 @@ import com.example.study.model.network.Header;
 import com.example.study.model.network.request.ItemApiRequest;
 import com.example.study.model.network.response.CategoryApiResponse;
 import com.example.study.model.network.response.ItemApiResponse;
+import com.example.study.model.network.response.UserOrderInfoApiResponse;
 import com.example.study.repository.ItemRepository;
 import com.example.study.repository.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,7 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest, ItemApiResp
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private ItemApiResponse response(Item item){
+    public ItemApiResponse response(Item item){
 
         ItemApiResponse body = ItemApiResponse.builder()
                 .id(item.getId())
@@ -123,5 +124,10 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest, ItemApiResp
                 .collect(Collectors.toList());
 
         return Header.OK(itemApiResponseList);
+    }
+
+    @Override
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+        return null;
     }
 }
